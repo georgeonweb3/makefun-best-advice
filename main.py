@@ -34,12 +34,18 @@ def validate(line: str) -> None:
         raise SystemExit("line must be exactly one sentence (one terminal period)")
     if "told me" not in line and "said" not in line:
         raise SystemExit("line must quote advice someone actually gave")
+    if len(line.encode("utf-8")) != len(line):
+        raise SystemExit("line must be ASCII so char count equals byte count")
 
 
 def main() -> None:
     validate(LINE)
-    with open(output_path(), "w", encoding="utf-8") as f:
+    path = output_path()
+    with open(path, "w", encoding="utf-8") as f:
         f.write(LINE + "\n")
+    with open(path, "r", encoding="utf-8") as f:
+        if f.read() != LINE + "\n":
+            raise SystemExit("entry.txt round-trip mismatch")
     print(LINE)
     print(f"({len(LINE)} characters)")
 
